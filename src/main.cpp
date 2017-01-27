@@ -3,11 +3,12 @@
 #include <stdio.h>
 #include <ios>
 #include <stdexcept>
-#include <Windows.h>
+#include <Windows.h> 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/ml/ml.hpp>
 #include <opencv2/core/core.hpp>
+
 
 using namespace std;
 using namespace cv;
@@ -16,13 +17,14 @@ using namespace cv::ml;
 
 
 
-string cascade_name = "haarcascades/haarcascade_frontalface_alt2.xml";
+string cascade_name = "haarcascades/haarcascade_frontalface_alt2.xml"; 
 
 
 int imageWidth = 600;
 int imageHeight = 600;
 
 char key;
+
 
 
 static void showDetections(const vector<Rect>& found, Mat& imageData) {
@@ -33,7 +35,7 @@ static void showDetections(const vector<Rect>& found, Mat& imageData) {
 	}
 }
 
-{
+
 
 void faceDetect(){
 	VideoCapture cap(CV_CAP_ANY);
@@ -50,12 +52,13 @@ void faceDetect(){
 
 	if (!cap.isOpened())
 		return;
+
 	namedWindow("video capture", CV_WINDOW_AUTOSIZE);
 
 	while (true)
 	{
 		Mat img;
-		cap >> img;//pobranie orazu z kamery do obrazu Mat
+		cap >> img;
 
 		Mat croppedImage;
 
@@ -93,5 +96,28 @@ void faceDetect(){
 			filter2D(croppedImage, dstImage, -1, kernel, Point(-1, -1), 0, BORDER_DEFAULT);
 
 			dstImage.copyTo(img(cv::Rect(x_pos, y_pos, dstImage.cols, dstImage.rows)));
+
 		}
+
+
+		showDetections(found_faces, img);
+
+		cv::imshow("video capture", img);
+
+		if (waitKey(10) >= 0)
+			break;
 	}
+
+}
+
+int main(int argc, char *argv[])
+{
+	faceDetect();
+
+	while (1){
+		if (waitKey(20) >= 0)
+			break;
+	}
+
+	return 0;
+}
