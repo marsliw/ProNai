@@ -33,7 +33,7 @@ static void showDetections(const vector<Rect>& found, Mat& imageData) {
 	}
 }
 
-
+{
 
 void faceDetect(){
 	VideoCapture cap(CV_CAP_ANY);
@@ -50,3 +50,48 @@ void faceDetect(){
 
 	if (!cap.isOpened())
 		return;
+	namedWindow("video capture", CV_WINDOW_AUTOSIZE);
+
+	while (true)
+	{
+		Mat img;
+		cap >> img;//pobranie orazu z kamery do obrazu Mat
+
+		Mat croppedImage;
+
+		//HAAR
+
+		Mat img_gray;
+		cvtColor(img, img_gray, COLOR_BGR2GRAY);
+
+		vector<Rect> found_faces;
+		vector<Rect> smooth_area;
+
+
+		cascade_1.detectMultiScale(img_gray, found_faces, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(30, 30));
+
+		smooth_area = found_faces;
+
+		int kernel_size = 13;
+		Mat kernel = Mat::ones(kernel_size, kernel_size, CV_32F) / (float)(kernel_size*kernel_size);
+
+
+		for (unsigned int i = 0; i < smooth_area.size(); ++i) {
+
+			smooth_area.at(i).width = smooth_area.at(i).width / 2;
+
+			int x_pos = smooth_area.at(i).x;
+			int y_pos = smooth_area.at(i).y;
+			int w = smooth_area.at(i).width;
+			int h = smooth_area.at(i).height;
+
+			croppedImage = img(smooth_area.at(i));
+
+			Mat dstImage;
+
+
+			filter2D(croppedImage, dstImage, -1, kernel, Point(-1, -1), 0, BORDER_DEFAULT);
+
+			dstImage.copyTo(img(cv::Rect(x_pos, y_pos, dstImage.cols, dstImage.rows)));
+		}
+	}
